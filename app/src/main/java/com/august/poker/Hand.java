@@ -6,6 +6,10 @@ public class Hand {
     public enum Hands {
         NOTHING,PAIR,TWOPAIRS,TRIPS,STRAIGHT,FLUSH,FULLHOUSE,QUADS,STRAIGHTFLUSH
     }
+
+    final static String[] handNames = {"nothing", "a pair", "two pairs", "trips", "a straight", "a flush", "a full house",
+                                    "quads", "a straight flush"};
+
     private ArrayList<Card> cards;
 
     public Hand(Card[] dealtCards) {
@@ -13,17 +17,32 @@ public class Hand {
         fillHand(dealtCards);
     }
 
+    //Metod för att visa shufflad hand (som håller koll på mappingen)
+
     private void fillHand(Card[] dealtCards) {
-        cards.add(dealtCards[0]);
-        for (int i=1;i<dealtCards.length;i++) {
-            for (int j=0;j<cards.size();j++) {
-                if (dealtCards[i].getRank()<cards.get(j).getRank()) {
-                    cards.add(j,dealtCards[i]);
-                    break;
+        if (getNrOfCards()==0) {
+            cards.add(dealtCards[0]);
+            for (int i=1;i<dealtCards.length;i++) {
+                for (int j=0;j<cards.size();j++) {
+                    if (dealtCards[i].getRank()<cards.get(j).getRank()) {
+                        cards.add(j,dealtCards[i]);
+                        break;
+                    }
                 }
+                if (dealtCards[i].getRank()>=cards.get(cards.size()-1).getRank())
+                    cards.add(dealtCards[i]);
             }
-            if (dealtCards[i].getRank()>=cards.get(cards.size()-1).getRank())
-                cards.add(dealtCards[i]);
+        } else {
+            for (int i=0;i<dealtCards.length;i++) {
+                for (int j = 0; j < cards.size(); j++) {
+                    if (dealtCards[i].getRank()<cards.get(j).getRank()) {
+                        cards.add(j, dealtCards[i]);
+                        break;
+                    }
+                }
+                if (dealtCards[i].getRank()>=cards.get(cards.size()-1).getRank())
+                    cards.add(dealtCards[i]);
+            }
         }
     }
 
@@ -74,10 +93,10 @@ public class Hand {
     }
 
     private boolean hasStraight() {
-        //Kollar först om handen har stege med Ess Högt
-        if (cards.get(0).getRank()==0 && cards.get(1).getRank()==10
-                && cards.get(2).getRank()==11 && cards.get(3).getRank()==12
-                && cards.get(4).getRank()==13)
+        //Kollar först om handen har stege med Ess Lågt
+        if (cards.get(0).getRank()==0 && cards.get(1).getRank()==1
+                && cards.get(2).getRank()==2 && cards.get(3).getRank()==3
+                && cards.get(4).getRank()==12)
             return true;
 
         for (int i=0;i<cards.size()-1;i++) {
@@ -152,11 +171,16 @@ public class Hand {
         return Hands.values()[getScore()].name();
     }
 
+    public String getHandName() {return handNames[getScore()];}
+
     private int[] getKickers() {
         int[] kickers = new int[5];
         switch (getScore()) {
             case 8:
-                kickers[0] = cards.get(4).getRank();
+                if (cards.get(4).getRank()==13 && cards.get(3).getRank()==3)
+                    kickers[0] = cards.get(3).getRank();
+                else
+                    kickers[0] = cards.get(4).getRank();
                 return kickers;
             case 7:
                 if (cards.get(0).getRank()==cards.get(3).getRank()) {
@@ -182,7 +206,10 @@ public class Hand {
                 }
                 return kickers;
             case 4:
-                kickers[0] = cards.get(4).getRank();
+                if (cards.get(4).getRank()==13 && cards.get(3).getRank()==3)
+                    kickers[0] = cards.get(3).getRank();
+                else
+                    kickers[0] = cards.get(4).getRank();
                 return kickers;
             case 3:
                 if (cards.get(0).getRank()==cards.get(2).getRank()) {
@@ -277,5 +304,14 @@ public class Hand {
             return betterKicker(hand);
         } else
             return getScore()>hand.getScore();
+    }
+
+    public void tradeCards(int[] chosenCards, Card[] dealtCards) {
+        if (chosenCards.length>0) {
+            for (int i=chosenCards.length-1;i>-1;i--)
+                cards.remove(chosenCards[i]);
+            fillHand(dealtCards);
+        }
+
     }
 }

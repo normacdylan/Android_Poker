@@ -5,10 +5,10 @@ public class Card {
         HEARTS,DIAMONDS,CLUBS,SPADES
     }
     public enum Rank {
-        ACE,TWO,THREE,FOUR,FIVE,SIX,SEVEN,EIGHT,NINE,TEN,JACK,QUEEN,KING
+        TWO,THREE,FOUR,FIVE,SIX,SEVEN,EIGHT,NINE,TEN,JACK,QUEEN,KING,ACE
     }
 
-    final static String[] abbreviations = {"A","2","3","4","5","6","7","8","9","10","J","Q","K"};
+    final static String[] abbreviations = {"2","3","4","5","6","7","8","9","10","J","Q","K","A"};
 
     private Suit suit;
     private Rank rank;
